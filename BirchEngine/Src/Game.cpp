@@ -1,9 +1,10 @@
 #include "Game.h"
+#include "TextureManager.h"
+#include "GameObject.h"
 
-SDL_Texture* playerTex;
-SDL_Rect srcR, destR;
 
-
+GameObject* player;
+GameObject* enemy;
 
 Game::Game()
 {}
@@ -32,12 +33,8 @@ void Game::init(const char* title, int width, int height, bool fullscreen)
 		isRunning = true;
 	}
 
-	SDL_Surface* tmpSurface = IMG_Load("assets/playerStandLeft.png");
-	if (!tmpSurface) {
-		std::cerr << "SDL Error: " << SDL_GetError() << std::endl;
-	}
-	playerTex = SDL_CreateTextureFromSurface(renderer, tmpSurface);
-	SDL_FreeSurface(tmpSurface);
+	player = new GameObject("assets/player.png", renderer, 0, 0);
+	enemy = new GameObject("assets/enemy.png", renderer, 200, 200);
 }
 
 void Game::handleEvents()
@@ -58,18 +55,16 @@ void Game::handleEvents()
 
 void Game::update()
 {
-	cnt++;
-	destR.h = 64;
-	destR.w = 64;
-	destR.x = cnt;
+	player->Update();
+	enemy->Update();
 }
 
 void Game::render()
 {
 	// Clear current render target
 	SDL_RenderClear(renderer);
-	// First null is we draw the whole image, second null is we draw it to the entire render frame
-	SDL_RenderCopy(renderer, playerTex, NULL, &destR);
+	player->Render();
+	enemy->Render();
 	// Update the screen with any rendering performed
 	SDL_RenderPresent(renderer);
 }
